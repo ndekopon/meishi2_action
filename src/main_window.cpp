@@ -305,10 +305,6 @@ namespace app {
 			::SetWindowLongPtrW(_window, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(instance));
 		}
 
-		// 背景は消さなくてよい
-		if (_message == WM_ERASEBKGND)
-			return 1;
-
 		// 既にデータが格納されていたらインスタンスのプロシージャを呼び出す
 		if (auto ptr = reinterpret_cast<main_window*>(::GetWindowLongPtrW(_window, GWLP_USERDATA)))
 		{
