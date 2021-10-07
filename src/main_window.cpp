@@ -206,18 +206,15 @@ namespace app {
 		switch (_message)
 		{
 		case WM_CREATE:
-		{
 			// フック
 			khook_.hook(window_);
 
 			// タスクトレイ追加
 			taskbar_created_ = tasktray_add();
 
-			break;
-		}
+			return 0;
 
 		case WM_DESTROY:
-		{
 			// タスクトレイ削除
 			tasktray_remove();
 
@@ -225,8 +222,8 @@ namespace app {
 			khook_.unhook();
 
 			::PostQuitMessage(0);
+
 			return 0;
-		}
 
 		case CWM_GLOBAL_KEYDOWN:
 		{
