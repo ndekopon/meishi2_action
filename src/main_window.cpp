@@ -11,7 +11,6 @@
 
 #pragma comment(lib, "imm32.lib")
 #pragma comment(lib, "Winmm.lib")
-#pragma comment(lib, "Shell32.lib")
 
 namespace app {
 

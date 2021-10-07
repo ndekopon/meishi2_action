@@ -1,10 +1,6 @@
 ﻿#include "common.hpp"
 
-#include <combaseapi.h>
-
 #include <mmdeviceapi.h>
-#include <audiopolicy.h>
-#include <audioclient.h>
 #include <endpointvolume.h>
 
 #include "mic_volume.hpp"

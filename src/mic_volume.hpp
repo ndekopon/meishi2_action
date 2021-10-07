@@ -2,8 +2,6 @@
 
 #include "common.hpp"
 
-#include <string>
-
 namespace app {
 
 	class mic_volume
