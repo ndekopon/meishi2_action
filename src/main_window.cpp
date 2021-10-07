@@ -261,7 +261,7 @@ namespace app {
 		case CWM_TASKTRAY:
 			switch (_lparam)
 			{
-			case WM_RBUTTONDOWN:
+			case WM_RBUTTONUP:
 				menu_create();
 				break;
 			}
