@@ -207,7 +207,7 @@ namespace app {
 		{
 		case WM_CREATE:
 			// フック
-			khook_.hook(window_);
+			khook_.hook(instance_, window_);
 
 			// タスクトレイ追加
 			taskbar_created_ = tasktray_add();

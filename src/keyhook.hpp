@@ -19,7 +19,7 @@ namespace app {
 		keyhook(keyhook&&) = delete;
 		keyhook& operator = (keyhook&&) = delete;
 
-		bool hook(HWND);
+		bool hook(HINSTANCE, HWND);
 		bool unhook();
 	};
 }

@@ -57,13 +57,13 @@ namespace app {
 		}
 	}
 
-	bool keyhook::hook(HWND _window)
+	bool keyhook::hook(HINSTANCE _instance, HWND _window)
 	{
 		window = _window;
 
 		if (hook_proc != NULL) return true;
 
-		hook_proc = ::SetWindowsHookExW(WH_KEYBOARD_LL, (HOOKPROC)keyboard_proc, (HINSTANCE)GetModuleHandleW(NULL), 0);
+		hook_proc = ::SetWindowsHookExW(WH_KEYBOARD_LL, (HOOKPROC)keyboard_proc, _instance, 0);
 		return hook_proc != NULL;
 	}
 
