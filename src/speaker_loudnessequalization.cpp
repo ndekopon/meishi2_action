@@ -10,19 +10,20 @@
 const PROPERTYKEY PKEY_Realtek_LoudnessEqualization = { {0xE0A941A0, 0x88A2, 0x4df5, {0x8D, 0x6B, 0xDD, 0x20, 0xBB, 0x06, 0xE8, 0xFB}}, 4 }; // DEVPROP_TYPE_UINT32
 interface DECLSPEC_UUID("568b9108-44bf-40b4-9006-86afe5b5a620") IPolicyConfig;
 class DECLSPEC_UUID("294935CE-F637-4E7C-A41B-AB255460B862") CPolicyConfigClient;
+
 interface IPolicyConfig : public IUnknown
 {
 public:
 
 	virtual HRESULT GetMixFormat(
 		__in PCWSTR,
-		WAVEFORMATEX**
+		__out WAVEFORMATEX**
 	);
 
 	virtual HRESULT STDMETHODCALLTYPE GetDeviceFormat(
 		__in PCWSTR,
 		__in BOOL,
-		WAVEFORMATEX**
+		__out WAVEFORMATEX**
 	);
 
 	virtual HRESULT STDMETHODCALLTYPE SetDeviceFormat(
@@ -34,8 +35,8 @@ public:
 	virtual HRESULT STDMETHODCALLTYPE GetProcessingPeriod(
 		__in PCWSTR,
 		__in BOOL,
-		__in PINT64,
-		__in PINT64
+		__out PINT64,
+		__out PINT64
 	);
 
 	virtual HRESULT STDMETHODCALLTYPE SetProcessingPeriod(
@@ -45,12 +46,12 @@ public:
 
 	virtual HRESULT STDMETHODCALLTYPE GetShareMode(
 		__in PCWSTR,
-		struct DeviceShareMode*
+		__out struct DeviceShareMode*
 	);
 
 	virtual HRESULT STDMETHODCALLTYPE SetShareMode(
 		__in PCWSTR,
-		struct DeviceShareMode*
+		__in struct DeviceShareMode*
 	);
 
 	virtual HRESULT STDMETHODCALLTYPE GetPropertyValue(
