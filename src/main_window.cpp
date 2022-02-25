@@ -27,14 +27,19 @@ namespace app {
 		, width_(0)
 		, height_(0)
 		, volume_()
+		, speaker_le_()
 		, khook_()
 		, nid_({ 0 })
 		, taskbar_created_(0)
 		, wav_mute_(L"")
 		, wav_unmute_(L"")
+		, wav_on_(L"")
+		, wav_off_(L"")
 	{
 		wav_mute_ = get_full_path(L"mute.wav");
 		wav_unmute_ = get_full_path(L"unmute.wav");
+		wav_on_ = get_full_path(L"on.wav");
+		wav_off_ = get_full_path(L"off.wav");
 	}
 
 	main_window::~main_window()
@@ -253,7 +258,20 @@ namespace app {
 			}
 			else if (vkcode == VK_F24)
 			{
-				terminate_exe(L"r5apex.exe");
+				bool state;
+				if (speaker_le_.toggle(state))
+				{
+					if (state)
+					{
+						// ラウドネス等化オン
+						::PlaySoundW(wav_on_.c_str(), NULL, SND_FILENAME | SND_ASYNC | SND_NODEFAULT);
+					}
+					else
+					{
+						// ラウドネス等化オフ
+						::PlaySoundW(wav_off_.c_str(), NULL, SND_FILENAME | SND_ASYNC | SND_NODEFAULT);
+					}
+				}
 			}
 			break;
 		}

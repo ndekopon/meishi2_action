@@ -4,6 +4,7 @@
 
 #include "keyhook.hpp"
 #include "mic_volume.hpp"
+#include "speaker_loudnessequalization.hpp"
 
 #include <string>
 
@@ -17,11 +18,14 @@ namespace app {
 		size_t width_;
 		size_t height_;
 		mic_volume volume_;
+		speaker_loudnessequalization speaker_le_;
 		keyhook khook_;
 		NOTIFYICONDATAW nid_;
 		UINT taskbar_created_;
 		std::wstring wav_mute_;
 		std::wstring wav_unmute_;
+		std::wstring wav_on_;
+		std::wstring wav_off_;
 
 		static const wchar_t* window_class_;
 		static const wchar_t* window_title_;
