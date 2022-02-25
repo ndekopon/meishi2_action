@@ -208,7 +208,7 @@ namespace app {
 		{
 		case WM_CREATE:
 			// フック
-			khook_.hook(instance_, window_);
+			khook_.hook(window_);
 
 			// タスクトレイ追加
 			taskbar_created_ = tasktray_add();
@@ -225,6 +225,34 @@ namespace app {
 			::PostQuitMessage(0);
 
 			return 0;
+
+		case WM_INPUT:
+		{
+			auto code = GET_RAWINPUT_CODE_WPARAM(_wparam);
+			if (code == RIM_INPUTSINK)
+			{
+				auto rawinput = reinterpret_cast<HRAWINPUT>(_lparam);
+
+				UINT size = 0;
+				std::vector<char>buf;
+
+				// 必要なバッファサイズを取得
+				if (::GetRawInputData(rawinput, RID_INPUT, nullptr, &size, sizeof(RAWINPUTHEADER)) == 0)
+				{
+					// データを取得
+					buf.resize(size);
+					if (::GetRawInputData(rawinput, RID_INPUT, buf.data(), &size, sizeof(RAWINPUTHEADER)) == buf.size())
+					{
+						auto input = reinterpret_cast<RAWINPUT*>(buf.data());
+						if (input->header.dwType == RIM_TYPEKEYBOARD)
+						{
+							khook_.proc(*input);
+						}
+					}
+				}
+			}
+			break;
+		}
 
 		case CWM_GLOBAL_KEYDOWN:
 		{

@@ -2,11 +2,18 @@
 
 #include "common.hpp"
 
+#include <vector>
+
 namespace app {
 
 	class keyhook
 	{
 	private:
+		HWND window_;
+		std::vector<HANDLE> mdevices_;
+		std::vector<HANDLE> idevices_;
+
+		bool check_device(HANDLE);
 
 	public:
 		keyhook();
@@ -19,7 +26,9 @@ namespace app {
 		keyhook(keyhook&&) = delete;
 		keyhook& operator = (keyhook&&) = delete;
 
-		bool hook(HINSTANCE, HWND);
+		bool hook(HWND);
 		bool unhook();
+
+		void proc(const RAWINPUT&);
 	};
 }

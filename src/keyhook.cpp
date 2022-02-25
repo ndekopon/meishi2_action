@@ -1,79 +1,100 @@
 ﻿#include "keyhook.hpp"
 
+#include <string>
+#include <algorithm>
+
 namespace {
-	HWND window = NULL;
-	HHOOK hook_proc = NULL;
+	std::wstring get_device_name(HANDLE _handle)
+	{
+		// バッファサイズ確定
+		UINT size = 0;
+		if (::GetRawInputDeviceInfoW(_handle, RIDI_DEVICENAME, nullptr, &size) != 0) return L"";
+
+		// データ読み出し
+		std::vector<WCHAR> buf(size + 1, L'\0');
+		if (::GetRawInputDeviceInfoW(_handle, RIDI_DEVICENAME, buf.data(), &size) == -1) return L"";
+		return buf.data();
+	}
 }
 
 namespace app {
 
-	
-	LRESULT CALLBACK keyboard_proc(int _code, WPARAM _wparam, LPARAM _lparam)
-	{
-		if (_code != HC_ACTION)
-			return ::CallNextHookEx(hook_proc, _code, _wparam, _lparam);
-
-		KBDLLHOOKSTRUCT* kbd = (KBDLLHOOKSTRUCT*)_lparam;
-
-		if (_wparam == WM_KEYDOWN)
-		{
-			switch (kbd->vkCode)
-			{
-			case VK_F21:
-			case VK_F22:
-			case VK_F23:
-			case VK_F24:
-				::PostMessageW(window, CWM_GLOBAL_KEYDOWN, kbd->vkCode, 0);
-				break;
-			}
-		}
-		else if (_wparam == WM_KEYUP)
-		{
-			switch (kbd->vkCode)
-			{
-			case VK_F21:
-			case VK_F22:
-			case VK_F23:
-			case VK_F24:
-				::PostMessageW(window, CWM_GLOBAL_KEYUP, kbd->vkCode, 0);
-				break;
-			}
-		}
-
-		return ::CallNextHookEx(hook_proc, _code, _wparam, _lparam);
-	}
-
 	keyhook::keyhook()
+		: window_(NULL)
+		, mdevices_()
+		, idevices_()
 	{
 	}
 
 	keyhook::~keyhook()
 	{
-		if (hook_proc != NULL)
-		{
-			unhook();
-		}
 	}
 
-	bool keyhook::hook(HINSTANCE _instance, HWND _window)
+	bool keyhook::hook(HWND _window)
 	{
-		window = _window;
+		window_ = _window;
 
-		if (hook_proc != NULL) return true;
-
-		hook_proc = ::SetWindowsHookExW(WH_KEYBOARD_LL, (HOOKPROC)keyboard_proc, _instance, 0);
-		return hook_proc != NULL;
+		// RawInput開始
+		RAWINPUTDEVICE dev = { 0 };
+		dev.usUsagePage = 0x01;
+		dev.usUsage = 0x06;
+		dev.dwFlags = RIDEV_INPUTSINK;
+		dev.hwndTarget = window_;
+		return ::RegisterRawInputDevices(&dev, 1, sizeof(dev)) == TRUE;
 	}
 
 	bool keyhook::unhook()
 	{
-		if (hook_proc == NULL) return true;
+		// RawInput停止
+		RAWINPUTDEVICE dev = { 0 };
+		dev.usUsagePage = 0x01;
+		dev.usUsage = 0x06;
+		dev.dwFlags = RIDEV_REMOVE;
+		dev.hwndTarget = NULL;
+		return ::RegisterRawInputDevices(&dev, 1, sizeof(dev)) == TRUE;
+	}
 
-		auto rc = ::UnhookWindowsHookEx(hook_proc);
-		if (rc == TRUE)
+	bool keyhook::check_device(HANDLE _device)
+	{
+		if (_device == NULL) return false;
+
+		// チェック済みの場合は結果を返す
+		if (std::find(mdevices_.begin(), mdevices_.end(), _device) != mdevices_.end()) return true;
+		if (std::find(idevices_.begin(), idevices_.end(), _device) != idevices_.end()) return false;
+
+		// 新規デバイスの場合は、名前からマッチしてるか確認
+		auto name = get_device_name(_device);
+		if (name.find(L"VID_BC42") != std::wstring::npos &&
+			name.find(L"PID_0003") != std::wstring::npos)
 		{
-			hook_proc = NULL;
+			mdevices_.push_back(_device);
+			return true;
 		}
-		return rc == TRUE;
+
+		idevices_.push_back(_device);
+		return false;
+	}
+
+	void keyhook::proc(const RAWINPUT& _i)
+	{
+		_i.header.hDevice;
+		const auto& k = _i.data.keyboard;
+		if (k.VKey == VK_F21 ||
+			k.VKey == VK_F22 ||
+			k.VKey == VK_F23 ||
+			k.VKey == VK_F24)
+		{
+			// meishi2ではない場合は無視
+			if (!check_device(_i.header.hDevice)) return;
+
+			if (k.Flags & RI_KEY_BREAK)
+			{
+				::PostMessageW(window_, CWM_GLOBAL_KEYUP, k.VKey, 0);
+			}
+			else
+			{
+				::PostMessageW(window_, CWM_GLOBAL_KEYDOWN, k.VKey, 0);
+			}
+		}
 	}
 }
