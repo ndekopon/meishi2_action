@@ -1,6 +1,4 @@
-﻿#include "common.hpp"
-
-#include "keyhook.hpp"
+﻿#include "keyhook.hpp"
 
 namespace {
 	HWND window = NULL;

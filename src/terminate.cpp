@@ -1,8 +1,6 @@
-﻿#include "common.hpp"
+﻿#include "terminate.hpp"
 
 #include <Tlhelp32.h>
-
-#include "terminate.hpp"
 
 namespace app {
 	

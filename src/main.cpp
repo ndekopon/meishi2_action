@@ -1,6 +1,4 @@
-﻿#include "common.hpp"
-
-#include "main_window.hpp"
+﻿#include "main_window.hpp"
 
 int APIENTRY wWinMain(HINSTANCE _instance, HINSTANCE _prev_instance, LPWSTR _cmdline, int _cmdshow)
 {

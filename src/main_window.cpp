@@ -1,13 +1,9 @@
-﻿#include "common.hpp"
+﻿#include "main_window.hpp"
 
 #include <vector>
 
 #include <imm.h>
 #include <mmsystem.h>
-
-#include "mic_volume.hpp"
-#include "main_window.hpp"
-#include "terminate.hpp"
 
 #pragma comment(lib, "imm32.lib")
 #pragma comment(lib, "Winmm.lib")

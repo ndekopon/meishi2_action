@@ -1,9 +1,7 @@
-﻿#include "common.hpp"
+﻿#include "mic_volume.hpp"
 
 #include <mmdeviceapi.h>
 #include <endpointvolume.h>
-
-#include "mic_volume.hpp"
 
 namespace app {
 	mic_volume::mic_volume()

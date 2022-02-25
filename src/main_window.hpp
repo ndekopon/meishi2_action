@@ -6,6 +6,8 @@
 #include "mic_volume.hpp"
 #include "speaker_loudnessequalization.hpp"
 
+#include <shellapi.h>
+
 #include <string>
 
 namespace app {
