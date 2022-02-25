@@ -30,6 +30,9 @@
     <ClInclude Include="src\terminate.hpp">
       <Filter>hdr</Filter>
     </ClInclude>
+    <ClInclude Include="src\speaker_loudnessequalization.hpp">
+      <Filter>hdr</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -45,6 +48,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\terminate.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\speaker_loudnessequalization.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

@@ -17,7 +17,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -59,6 +59,7 @@
     <ClInclude Include="src\keyhook.hpp" />
     <ClInclude Include="src\main_window.hpp" />
     <ClInclude Include="src\mic_volume.hpp" />
+    <ClInclude Include="src\speaker_loudnessequalization.hpp" />
     <ClInclude Include="src\terminate.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -66,6 +67,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\main_window.cpp" />
     <ClCompile Include="src\mic_volume.cpp" />
+    <ClCompile Include="src\speaker_loudnessequalization.cpp" />
     <ClCompile Include="src\terminate.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
