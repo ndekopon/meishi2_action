@@ -94,12 +94,14 @@ namespace app {
 	{
 		HRESULT hr;
 		IMMDeviceEnumerator* enumrator = NULL;
+		IMMDeviceCollection* collection = NULL;
 		IMMDevice* device = NULL;
 		IPolicyConfig* policy = NULL;
 		LPWSTR device_id = NULL;
 		PROPVARIANT v;
 		bool rc = false;
 		BOOL state = true;
+		UINT count = 0;
 
 		::PropVariantInit(&v);
 
@@ -109,53 +111,62 @@ namespace app {
 			goto end;
 		}
 
-		// デフォルトのレンダーデバイスを取得
-		hr = enumrator->GetDefaultAudioEndpoint(eRender, eConsole, &device);
+		// レンダーデバイスを列挙
+		hr = enumrator->EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE, &collection);
 		if (FAILED(hr))
 		{
 			goto end;
 		}
 
-		// DEVICE ID取得
-		hr = device->GetId(&device_id);
-		if (hr != S_OK)
-		{
-			goto end;
-		}
-		
-		// プロパティを変更するPolicyConfig取得
-		hr = ::CoCreateInstance(__uuidof(CPolicyConfigClient), NULL, CLSCTX_ALL, IID_PPV_ARGS(&policy));
-		if (FAILED(hr))
+		hr = collection->GetCount(&count);
+		if (FAILED(hr) || count == 0)
 		{
 			goto end;
 		}
 
-		// プロパティ取得
-		hr = policy->GetPropertyValue(device_id, TRUE, PKEY_Realtek_LoudnessEqualization, &v);
-		if (!SUCCEEDED(hr))
+		for (ULONG i = 0; i < count; i++)
 		{
-			goto end;
-		}
+			// Get pointer to endpoint number i.
+			hr = collection->Item(i, &device);
+			if (hr == S_OK)
+			{
+				// DEVICE ID取得
+				hr = device->GetId(&device_id);
+				if (hr == S_OK)
+				{
+					// プロパティを変更するPolicyConfig取得
+					hr = ::CoCreateInstance(__uuidof(CPolicyConfigClient), NULL, CLSCTX_ALL, IID_PPV_ARGS(&policy));
+					if (!FAILED(hr))
+					{
+						// プロパティ取得
+						hr = policy->GetPropertyValue(device_id, TRUE, PKEY_Realtek_LoudnessEqualization, &v);
+						if (SUCCEEDED(hr))
+						{
+							// 値の確認
+							if (v.vt == VT_UI4)
+							{
+								// ON/OFF切り替え
+								v.uintVal = v.uintVal == 0 ? 1 : 0;
 
-		// 値の確認
-		if (v.vt != VT_UI4)
-		{
-			goto end;
+								// プロパティ設定
+								hr = policy->SetPropertyValue(device_id, TRUE, PKEY_Realtek_LoudnessEqualization, v);
+								if (SUCCEEDED(hr))
+								{
+									// 返り値を設定
+									_state = v.uintVal == 1;
+									rc = true;
+								}
+							}
+						}
+						policy->Release();
+						policy = NULL;
+					}
+				}
+				device->Release();
+				device = NULL;
+			}
+			if (rc == true) break;
 		}
-
-		// ON/OFF切り替え
-		v.uintVal = v.uintVal == 0 ? 1 : 0;
-
-		// プロパティ設定
-		hr = policy->SetPropertyValue(device_id, TRUE, PKEY_Realtek_LoudnessEqualization, v);
-		if (!SUCCEEDED(hr))
-		{
-			goto end;
-		}
-		
-		// 返り値を設定
-		_state = v.uintVal == 1;
-		rc = true;
 
 	end:
 		if (policy)
@@ -164,6 +175,8 @@ namespace app {
 			::CoTaskMemFree(device_id);
 		if (device)
 			device->Release();
+		if (collection)
+			collection->Release();
 		if (enumrator)
 			enumrator->Release();
 
